@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "https://example.com/employee.schema.json",
+    "description": "Scheme for verification lab task config",
+    "type": "object",
+    "properties": {
+        "host": {
+            "type": "string"
+        },
+        "port":{
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9999
+        }
+    },
+    "required": ["host", "port"]
+}

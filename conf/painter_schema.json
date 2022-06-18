@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "https://example.com/employee.schema.json",
+    "description": "Scheme for verification lab task config",
+    "type": "object",
+    "properties": {
+        "canvas_tf": {
+            "type": "array",
+            "items": {
+
+            }
+        },
+        "canvas_size": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "axis_speed":{
+
+        }
+    },
+    "required": ["canvas_tf"]
+}

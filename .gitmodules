@@ -1,0 +1,6 @@
+[submodule "kdl_parser"]
+	path = kdl_parser
+	url = https://github.com/ros/kdl_parser.git
+[submodule "kinematic/kdl_parser"]
+	path = kinematic/kdl_parser
+	url = https://github.com/ros/kdl_parser.git
