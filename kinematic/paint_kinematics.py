@@ -1,7 +1,7 @@
 import numpy as np
 from urdfpy import URDF
 import PyKDL as kdl
-from kdl_parser.kdl_parser_py.kdl_parser_py import urdf
+from .kdl_parser.kdl_parser_py.kdl_parser_py import urdf
 
 
 class PaintKinematicsKDL:
@@ -18,8 +18,13 @@ class PaintKinematicsKDL:
         urdf_file_path:  path to URDF file
         '''
         self.__urdf_file_path = urdf_file_path
+        
         self.__z_offset = 0
         self.__robot_urdf = None
+
+        if not self.__urdf_file_path is None:
+            self.load_URDF(self.__urdf_file_path)
+
     def __initialize_kdl(self):
         '''
         initialize kdl kenimatics solvers
@@ -41,10 +46,8 @@ class PaintKinematicsKDL:
         self.__ik_posesolver    = kdl.ChainIkSolverPos_LMA(
             self.__chain
         )
-
         self.__z_offset = self.__robot_urdf.joints[0].origin[2,3] \
                         + self.__robot_urdf.joints[1].origin[2,3]
-
 
 
     def ik_pose(self, new_pos: np.ndarray, old_pos: np.ndarray):
@@ -54,7 +57,17 @@ class PaintKinematicsKDL:
         joints_angles = to_jnt_array(old_pos)
 
         self.__ik_posesolver.CartToJnt(joints_angles, goal, result)
-        return np.array(list(result))
+
+        joint_pose = np.array(list(result))
+
+        for i in range(joint_pose.shape[0]):
+            joint_pose[i] %= 2*np.pi
+            if joint_pose[i] > np.pi:
+                joint_pose[i] -= np.pi*2
+            elif joint_pose[i] < -np.pi:
+                joint_pose[i] += np.pi*2
+        print(joint_pose)
+        return joint_pose
 
     def fk_pose(self, q: np.ndarray):
         end_frame = kdl.Frame()

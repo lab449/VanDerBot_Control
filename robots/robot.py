@@ -4,23 +4,29 @@ from jsonschema import validate, ValidationError
 import numpy as np
 import sys, os
 
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-class RobotConnection(ABC):
+from kinematic.paint_kinematics import PaintKinematicsKDL
+
+class Robot(ABC):
     def __init__(self, connection_config: dict, timeout: float):
         self._connection_config = connection_config
         self._timeout = timeout
+        self._robot_model = None
 
+    def setRobotModel(self, model: PaintKinematicsKDL):
+        self._robot_model = model
+    
     @abstractmethod
     def connect(self) -> bool:
         pass
 
     @abstractmethod
-    def moveJ(self, point: np.array, blocked: bool = True) -> bool:
+    def servoJ(self, point: np.array, blocked: bool = True) -> bool:
         pass
 
     @abstractmethod
-    def moveL(self, point: np.array, blocked: bool = True) -> bool:
+    def servoL(self, point: np.array) -> bool:
         pass
 
     @abstractmethod
@@ -31,7 +37,7 @@ class RobotConnection(ABC):
     def wait(self) -> bool:
         pass
 
-class RobotSerialConnection(RobotConnection):
+class RobotSerial(Robot):
     def __init__(self, connection_config: dict, timeout: float = 1.0):
         super().__init__(connection_config, timeout)
         with open('conf/serial_robot_schema.json') as json_file:
@@ -43,11 +49,11 @@ class RobotSerialConnection(RobotConnection):
         pass
 
     @abstractmethod
-    def moveJ(self, point: np.array, blocked: bool = True) -> bool:
+    def servoJ(self, point: np.array, blocked: bool = True) -> bool:
         pass
 
     @abstractmethod
-    def moveL(self, point: np.array, blocked: bool = True) -> bool:
+    def servoL(self, point: np.array) -> bool:
         pass
 
     @abstractmethod
@@ -59,7 +65,7 @@ class RobotSerialConnection(RobotConnection):
         pass
         
 
-class RobotUDPConnection(RobotConnection):
+class RobotUDP(Robot):
     def __init__(self, connection_config: dict, timeout: float = 0.1):
         super().__init__(connection_config, timeout)
         with open('conf/ethernet_robot_scheme.json') as json_file:
@@ -71,11 +77,11 @@ class RobotUDPConnection(RobotConnection):
         pass
 
     @abstractmethod
-    def moveJ(self, point: np.array, blocked: bool = True) -> bool:
+    def servoJ(self, point: np.array, blocked: bool = True) -> bool:
         pass
 
     @abstractmethod
-    def moveL(self, point: np.array, blocked: bool = True) -> bool:
+    def servoL(self, point: np.array) -> bool:
         pass
 
     @abstractmethod

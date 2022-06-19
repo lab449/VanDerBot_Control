@@ -1,12 +1,17 @@
-from .robot import RobotSerialConnection
+from .robot import RobotSerial
 import numpy as np
 import serial
+import sys, os
 import time
 import logging
 import struct
 from threading import Thread, Lock
 
-class VanderBotV2(RobotSerialConnection):
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from kinematic.paint_kinematics import PaintKinematicsKDL
+
+class VanderBotV2(RobotSerial):
     def __init__(self, connection_config: dict):
         super().__init__(connection_config)
         self.__serial_connection = serial.Serial(
@@ -14,10 +19,10 @@ class VanderBotV2(RobotSerialConnection):
             baudrate=connection_config['baudrate'],
             timeout=0.5
         )
-        self.__thread = Thread(target=self.__busy_checking)
+        self.__thread = Thread(target=self.__busy_checking, daemon=True)
         self.__lock = Lock()
         self.__busy = True
-        self.__last_state: np.array = None
+        self.__last_state: np.array = np.array([-np.pi/2, np.pi/2])
 
     def connect(self) -> bool:
         while True:
@@ -33,9 +38,16 @@ class VanderBotV2(RobotSerialConnection):
         self.__thread.start()
         return True
 
-
-    def servoL(self, point: np.array, model: PaintKinematicsKDL) -> bool:
-        pass
+    def servoL(self, point: np.array, blocked: bool = True) -> bool:
+        if self._robot_model is None:
+            raise Exception('Robot model is not defined')
+        jpose = self._robot_model.ik_pose(point, self.__last_state)
+        print(jpose)
+        if jpose is None:
+            return False
+        
+        self.servoJ(jpose, blocked)
+        return True
 
     def servoJ(self, point_rad: np.array, blocked: bool = True) -> bool:
         point = np.rad2deg(point_rad)
@@ -66,17 +78,19 @@ class VanderBotV2(RobotSerialConnection):
     def busy(self) -> bool:
         return self.__busy
 
+    @property
+    def state(self) -> np.array:
+        return self.__last_state
+
     def __busy_checking(self)-> bool:
          while True:
             try:
                 if self.__serial_connection.in_waiting != 0:
                     ok = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
-                    print("busy_checking ", ok)
                     if ok == 'OK':
                         logging.info('Moving complete')
-                        with self.__lock:
-                            self.__busy = False
-                time.sleep(1e-3)
+                        print('OK')
+                        self.__busy = False
             except KeyboardInterrupt:
                 self.__lock.release()
                 break

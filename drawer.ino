@@ -1,5 +1,5 @@
 #define initAng1 229.36
-#define initAng2 30.86
+#define initAng2 33.86
 #define mPrecision 0.2
 #define mSpeed 6000
 

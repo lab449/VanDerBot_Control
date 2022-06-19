@@ -1,4 +1,4 @@
-from PaintKinematics import PaintKinematicsKDL
+from kinematic.paint_kinematics import PaintKinematicsKDL
 import numpy as np
 
 def main():
@@ -7,7 +7,7 @@ def main():
     pk.load_URDF(urdf_file_path = urdf_path)
     start_pose = np.array([0, 0])
     cp_pose = np.array([0.6, -0.])
-    
+
     new_jpos = pk.ik_pose(new_pos = cp_pose, old_pos = start_pose)
     print(new_jpos)
     fk_pose = pk.fk_pose(q = np.array(new_jpos))

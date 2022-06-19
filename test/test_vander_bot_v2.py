@@ -6,6 +6,7 @@ import numpy as np
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from robots.vander_bot_v2 import VanderBotV2
+from kinematic.paint_kinematics import PaintKinematicsKDL
 
 class Testing(unittest.TestCase):
     def setUp(self):
@@ -14,13 +15,26 @@ class Testing(unittest.TestCase):
         self.robot = VanderBotV2(config)
         ok = self.robot.connect()
         self.assertTrue(ok)
+
+        self.robot_model = PaintKinematicsKDL('conf/vander_bot_v2.urdf')
+        self.robot.setRobotModel(self.robot_model)
     
-    def test_moveJ(self):
-        print('test')
-        ok = self.robot.servoJ(np.array([0.1, 0]), False)
+    # def test_servoJ(self):
+    #     ok = self.robot.servoJ(np.array([0.0, np.pi/2]), False)
+    #     self.assertTrue(ok)
+    #     ok = self.robot.wait()
+    #     self.assertTrue(ok)
+
+        # ok = self.robot.servoJ(np.array([0.0, 0.0]), True)
+
+    def test_servoL(self):
+        ok = self.robot.servoL(np.array([0.0, 0.2]), False)
         self.assertTrue(ok)
         ok = self.robot.wait()
         self.assertTrue(ok)
+
+        ok = self.robot.servoL(np.array([0.2, 0.2]), True)
+
 
 
 if __name__ == '__main__':

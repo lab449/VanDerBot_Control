@@ -7,7 +7,10 @@
         "canvas_tf": {
             "type": "array",
             "items": {
-
+                "type": "array",
+                "items": {
+                    "type": "number"
+                }
             }
         },
         "canvas_size": {
@@ -17,8 +20,11 @@
             }
         },
         "axis_speed":{
-
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
         }
     },
-    "required": ["canvas_tf"]
+    "required": ["canvas_tf", "axis_speed"]
 }

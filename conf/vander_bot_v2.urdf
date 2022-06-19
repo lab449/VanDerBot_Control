@@ -38,23 +38,23 @@
 	</link>
 
 	<joint name="base_link_link_01" type="revolute">
-		<axis xyz="0 0 1"/>
+		<axis xyz="0 0 -1"/>
 		<limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
-		<origin rpy="0 0 0.7853981633974483" xyz="0 0 0.005"/>
+		<origin rpy="0 0 0" xyz="0 0 0.005"/>
 		<parent link="base_link"/>
 		<child link="link_01"/>
 	</joint>
 
 	<joint name="link_01_link_02" type="revolute">
-		<axis xyz="0 0 1"/>
+		<axis xyz="0 0 -1"/>
     <limit effort="1000.0" lower="0" upper="3.14" velocity="0.5"/>
-    <origin rpy="0 0 0" xyz="0 0.3566 0.01"/>
+    <origin rpy="0 0 0" xyz="0.02467 0.35571 0.01"/>
     <parent link="link_01"/>
 		<child link="link_02"/>
 	</joint>
 
 	<joint name="link_02_tool" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.2896 0.0"/>
+    <origin rpy="0 0 0" xyz="0.02754 0.28 0.0"/>
     <parent link="link_02"/>
 		<child link="tool"/>
 	</joint>
