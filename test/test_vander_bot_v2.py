@@ -28,12 +28,12 @@ class Testing(unittest.TestCase):
         # ok = self.robot.servoJ(np.array([0.0, 0.0]), True)
 
     def test_servoL(self):
-        ok = self.robot.servoL(np.array([0.0, 0.2]), False)
+        ok = self.robot.servoL(np.array([0.0, 0.0, 0.018]), False)
         self.assertTrue(ok)
         ok = self.robot.wait()
         self.assertTrue(ok)
 
-        ok = self.robot.servoL(np.array([0.2, 0.2]), True)
+        ok = self.robot.servoL(np.array([0.2, 0.2, 0.034]), True)
 
 
 

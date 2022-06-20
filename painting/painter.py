@@ -40,6 +40,10 @@ class Painter:
                 trj_list.append(p[:2])
             out_array = np.array(trj_list)
             trj = rtb.mstraj(out_array, 0.02, 0.1, qdmax=0.05)
-            for xy in trj.q:
-                self.__robot.servoL(xy, True)
+            trajectory = trj.q
+            self.__robot.servoL(np.concatenate([trajectory[0], np.array([0.0])]), True)
+            self.__robot.servoL(np.array([0.0, 0.0, 0.018]))
+            for xy in trajectory:
+                self.__robot.servoL(np.concatenate([xy, np.array([0.0])]), True)
+            self.__robot.servoL(np.array([0.0, 0.0, 0.034]))
         return True

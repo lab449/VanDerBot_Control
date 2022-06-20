@@ -19,10 +19,11 @@ class VanderBotV2(RobotSerial):
             baudrate=connection_config['baudrate'],
             timeout=0.5
         )
-        self.__thread = Thread(target=self.__busy_checking, daemon=True)
+        self.__thread = Thread(target=self.__serial_sending, daemon=True)
         self.__lock = Lock()
         self.__busy = True
-        self.__last_state: np.array = np.array([-np.pi/2, np.pi/2])
+        self.__last_state: np.array = np.array([-np.pi/2, np.pi/2, 0.0])
+        self.__target_state: np.array = None
 
     def connect(self) -> bool:
         while True:
@@ -41,35 +42,35 @@ class VanderBotV2(RobotSerial):
     def servoL(self, point: np.array, blocked: bool = True) -> bool:
         if self._robot_model is None:
             raise Exception('Robot model is not defined')
-        jpose = self._robot_model.ik_pose(point, self.__last_state)
-        print(jpose)
+        jpose = self._robot_model.ik_pose(point[:2], self.__last_state[:2])
+        # print(jpose)
         if jpose is None:
             return False
         
-        self.servoJ(jpose, blocked)
+        self.servoJ(np.concatenate([jpose, np.array([point[2]])]), blocked)
         return True
 
     def servoJ(self, point_rad: np.array, blocked: bool = True) -> bool:
         point = np.rad2deg(point_rad)
-        if point.size != 2:
+        if point.size != 3:
             return False
-        
+
         if self.__busy:
             return False
+
         if not blocked:
-            data_in = point.tolist() + [0.0]
-            buf = struct.pack('%sf' % len(data_in), *data_in)
-            self.__serial_connection.write(buf)
-            self.__busy = True 
+            with self.__lock:
+                self.__target_state = point
+                print(self.__target_state)
         else:
-            data_in = point.tolist() + [0.0]
-            buf = struct.pack('%sf' % len(data_in), *data_in)
-            self.__serial_connection.write(buf)
-            self.__busy = True     
+            with self.__lock:
+                self.__target_state = point
+                print(self.__target_state)
             self.wait()      
         return True
     
     def wait(self) -> bool:
+        time.sleep(1e-3)
         while self.__busy:
             time.sleep(1e-3)
         return True
@@ -82,15 +83,22 @@ class VanderBotV2(RobotSerial):
     def state(self) -> np.array:
         return self.__last_state
 
-    def __busy_checking(self)-> bool:
+    def __serial_sending(self)-> bool:
          while True:
             try:
-                if self.__serial_connection.in_waiting != 0:
+                if self.__serial_connection.inWaiting() != 0:
                     ok = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
                     if ok == 'OK':
-                        logging.info('Moving complete')
+                        # logging.info('Moving complete')
                         print('OK')
                         self.__busy = False
+                elif (not self.__target_state is None) and (not self.__busy):
+                    self.__busy = True
+                    data_in = self.__target_state.tolist()
+                    buf = struct.pack('%sf' % len(data_in), *data_in)
+                    self.__target_state = None
+                    self.__serial_connection.write(buf)
             except KeyboardInterrupt:
-                self.__lock.release()
+                self.__serial_connection.close()
                 break
+            
