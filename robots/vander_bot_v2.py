@@ -107,7 +107,7 @@ class VanderBotV2(RobotSerial):
                     self.__serial_connection.write(buf)
                     self.__start_time = time.time()
                 elif time.time() - self.__start_time > self.__timeout:
-                    self.__busy = False
+                    self.__busy = True
                     self.__start_time = time.time()
                     print('TIMEOUT: resending')
                     self.__is_timeout = True
