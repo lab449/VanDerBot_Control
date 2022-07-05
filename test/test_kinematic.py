@@ -1,8 +1,12 @@
-from kinematic.paint_kinematics import PaintKinematicsKDL
 import numpy as np
+import sys, os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from kinematic.paint_kinematics import PaintKinematicsKDL
 
 def main():
-    urdf_path = "./robot_config.urdf"
+    urdf_path = "conf/vander_bot_v2.urdf"
     pk = PaintKinematicsKDL()
     pk.load_URDF(urdf_file_path = urdf_path)
     start_pose = np.array([0, 0])

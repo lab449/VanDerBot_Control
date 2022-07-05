@@ -51,7 +51,8 @@ class VanderBotV2(RobotSerial):
         return True
 
     def servoJ(self, point_rad: np.array, blocked: bool = True) -> bool:
-        point = np.rad2deg(point_rad)
+        # print(point_rad[2])
+        point = np.concatenate([np.rad2deg(point_rad[0:2]), np.array([point_rad[2]])])
         if point.size != 3:
             return False
 
@@ -61,11 +62,11 @@ class VanderBotV2(RobotSerial):
         if not blocked:
             with self.__lock:
                 self.__target_state = point
-                print(self.__target_state)
+                # print(self.__target_state)
         else:
             with self.__lock:
                 self.__target_state = point
-                print(self.__target_state)
+                # print(self.__target_state)
             self.wait()      
         return True
     
@@ -89,7 +90,6 @@ class VanderBotV2(RobotSerial):
                 if self.__serial_connection.inWaiting() != 0:
                     ok = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
                     if ok == 'OK':
-                        # logging.info('Moving complete')
                         print('OK')
                         self.__busy = False
                 elif (not self.__target_state is None) and (not self.__busy):

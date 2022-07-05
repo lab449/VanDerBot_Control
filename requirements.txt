@@ -1,4 +1,5 @@
 numpy
 pyserial
-urdfpy
 roboticstoolbox-python
+urdf-parser-py
+jsonschema

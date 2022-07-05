@@ -20,20 +20,22 @@ class Testing(unittest.TestCase):
         self.robot.setRobotModel(self.robot_model)
     
     # def test_servoJ(self):
-    #     ok = self.robot.servoJ(np.array([0.0, np.pi/2]), False)
+    #     ok = self.robot.servoJ(np.array([0.0, 0.0, 0.0]), False)
     #     self.assertTrue(ok)
     #     ok = self.robot.wait()
     #     self.assertTrue(ok)
 
-        # ok = self.robot.servoJ(np.array([0.0, 0.0]), True)
+    #     ok = self.robot.servoJ(np.array([0.0, 0.0, 0.0]), True)
 
     def test_servoL(self):
-        ok = self.robot.servoL(np.array([0.0, 0.0, 0.018]), False)
-        self.assertTrue(ok)
-        ok = self.robot.wait()
-        self.assertTrue(ok)
+        # ok = self.robot.servoJ(np.array([-100.0, -100.0, 0.018]), False)
+        # self.assertTrue(ok)
+        # ok = self.robot.wait()
+        # self.assertTrue(ok)
+        for i in range(0, 10):
+            ok = self.robot.servoJ(np.array([-100.0, -100.0, -2*np.pi]), True)
+            ok = self.robot.servoJ(np.array([-100.0, -100.0, 2*np.pi]), True)
 
-        ok = self.robot.servoL(np.array([0.2, 0.2, 0.034]), True)
 
 
 
