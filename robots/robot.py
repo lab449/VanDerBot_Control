@@ -43,6 +43,7 @@ class RobotSerial(Robot):
         with open('conf/serial_robot_schema.json') as json_file:
             connection_schema = json.load(json_file)
         validate(instance=self._connection_config, schema=connection_schema)
+        self._connection_config = connection_config
 
     @abstractmethod
     def connect(self) -> bool:

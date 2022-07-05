@@ -14,23 +14,23 @@ from kinematic.paint_kinematics import PaintKinematicsKDL
 class VanderBotV2(RobotSerial):
     def __init__(self, connection_config: dict):
         super().__init__(connection_config)
-        self.__serial_connection = serial.Serial(
-            port=connection_config['port'],
-            baudrate=connection_config['baudrate'],
-            timeout=0.5
-        )
         self.__busy = True
         self.__last_state: np.array = np.array([-np.pi/2, np.pi/2, 0.0])
         self.__target_state: np.array = None
         self.__start_time = time.time()
 
     def connect(self, timeout: float = 20.0) -> bool:
+        self.__serial_connection = serial.Serial(
+            port=self._connection_config['port'],
+            baudrate=self._connection_config['baudrate'],
+            timeout=0.5
+        )
         self.__is_timeout = False
         self.__thread = Thread(target=self.__serial_sending, daemon=True)
         self.__lock = Lock()
         self.__timeout = timeout
         while True:
-            if self.__serial_connection.in_waiting != 0:
+            if self.__serial_connection.inWaiting() != 0:
                 start = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
                 if start == 'START':
                     logging.info('Connection established')
