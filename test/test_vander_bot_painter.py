@@ -35,7 +35,7 @@ class Testing(unittest.TestCase):
         # ok = self.robot.servoJ(np.array([0.0, 0.0]), True)
 
     def test_draw_json(self):
-        with open('test/path_test1.json') as file:
+        with open('test/dicaprio.json') as file:
             path = json.load(file)
         ok = self.painter.draw_json(path)
 

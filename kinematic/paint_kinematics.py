@@ -66,7 +66,7 @@ class PaintKinematicsKDL:
                 joint_pose[i] -= np.pi*2
             elif joint_pose[i] < -np.pi:
                 joint_pose[i] += np.pi*2
-        print(joint_pose)
+        # print(joint_pose)
         return joint_pose
 
     def fk_pose(self, q: np.ndarray):

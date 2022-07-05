@@ -90,7 +90,7 @@ class VanderBotV2(RobotSerial):
                 if self.__serial_connection.inWaiting() != 0:
                     ok = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
                     if ok == 'OK':
-                        print('OK')
+                        # print('OK')
                         self.__busy = False
                 elif (not self.__target_state is None) and (not self.__busy):
                     self.__busy = True

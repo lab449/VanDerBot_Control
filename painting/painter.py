@@ -42,10 +42,10 @@ class Painter:
             trj = rtb.mstraj(out_array, 0.02, 0.1, qdmax=0.05)
             trajectory = trj.q
             self.__robot.servoL(np.concatenate([trajectory[0], np.array([0.0])]), True)
-            self.__robot.servoJ(np.array([0.0, 0.0, -np.pi]))
+            self.__robot.servoJ(np.array([0.0, 0.0, -5*np.pi]), True)
             print('Take down')
             for xy in trajectory:
                 self.__robot.servoL(np.concatenate([xy, np.array([0.0])]), True)
-            self.__robot.servoJ(np.array([0.0, 0.0, np.pi]))
+            self.__robot.servoJ(np.array([0.0, 0.0, 5*np.pi]), True)
             print('Take up')
         return True
