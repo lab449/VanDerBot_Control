@@ -19,14 +19,15 @@ class VanderBotV2(RobotSerial):
             baudrate=connection_config['baudrate'],
             timeout=0.5
         )
-        self.__thread = Thread(target=self.__serial_sending, daemon=True)
-        self.__lock = Lock()
         self.__busy = True
         self.__last_state: np.array = np.array([-np.pi/2, np.pi/2, 0.0])
         self.__target_state: np.array = None
         self.__start_time = time.time()
 
     def connect(self, timeout: float = 20.0) -> bool:
+        self.__is_timeout = False
+        self.__thread = Thread(target=self.__serial_sending, daemon=True)
+        self.__lock = Lock()
         self.__timeout = timeout
         while True:
             if self.__serial_connection.in_waiting != 0:
@@ -77,6 +78,9 @@ class VanderBotV2(RobotSerial):
         time.sleep(1e-3)
         while self.__busy:
             time.sleep(1e-3)
+            if self.__is_timeout:
+                self.__serial_connection.close()
+                self.connect(self.__timeout)
         return True
 
     @property
@@ -106,6 +110,8 @@ class VanderBotV2(RobotSerial):
                     self.__busy = False
                     self.__start_time = time.time()
                     print('TIMEOUT: resending')
+                    self.__is_timeout = True
+                    break
             except KeyboardInterrupt:
                 self.__serial_connection.close()
                 break
