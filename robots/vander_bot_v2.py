@@ -102,7 +102,7 @@ class VanderBotV2(RobotSerial):
                     self.__target_state = None
                     self.__serial_connection.write(buf)
                     self.__start_time = time.time()
-                elif time.time() - self.__start_time > self.__timeot:
+                elif time.time() - self.__start_time > self.__timeout:
                     self.__busy = False
             except KeyboardInterrupt:
                 self.__serial_connection.close()
