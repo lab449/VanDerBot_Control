@@ -104,6 +104,7 @@ class VanderBotV2(RobotSerial):
                     self.__start_time = time.time()
                 elif time.time() - self.__start_time > self.__timeout:
                     self.__busy = False
+                    print('TIMEOUT: resending')
             except KeyboardInterrupt:
                 self.__serial_connection.close()
                 break
