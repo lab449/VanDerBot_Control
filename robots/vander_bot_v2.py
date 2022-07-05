@@ -24,8 +24,10 @@ class VanderBotV2(RobotSerial):
         self.__busy = True
         self.__last_state: np.array = np.array([-np.pi/2, np.pi/2, 0.0])
         self.__target_state: np.array = None
+        self.__start_time = time.time()
 
-    def connect(self) -> bool:
+    def connect(self, timeout: float = 20.0) -> bool:
+        self.__timeout = timeout
         while True:
             if self.__serial_connection.in_waiting != 0:
                 start = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
@@ -36,6 +38,7 @@ class VanderBotV2(RobotSerial):
                 else:
                     return False
             time.sleep(1e-3)
+        self.__start_time = time.time()
         self.__thread.start()
         return True
 
@@ -85,7 +88,7 @@ class VanderBotV2(RobotSerial):
         return self.__last_state
 
     def __serial_sending(self)-> bool:
-         while True:
+        while True:
             try:
                 if self.__serial_connection.inWaiting() != 0:
                     ok = self.__serial_connection.read(self.__serial_connection.inWaiting()).decode()
@@ -98,6 +101,9 @@ class VanderBotV2(RobotSerial):
                     buf = struct.pack('%sf' % len(data_in), *data_in)
                     self.__target_state = None
                     self.__serial_connection.write(buf)
+                    self.__start_time = time.time()
+                elif time.time() - self.__start_time > self.__timeot:
+                    self.__busy = False
             except KeyboardInterrupt:
                 self.__serial_connection.close()
                 break
